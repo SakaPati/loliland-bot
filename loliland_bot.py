@@ -153,14 +153,15 @@ async def main():
     # Запускаем фоновую задачу для обработки очереди
     asyncio.create_task(process_queue())
     
-    # Настройка Webhook (для сервера)
+    # Настройка Webhook
     PORT = int(os.environ.get("PORT", 8443))
-    WEBHOOK_URL = os.environ.get("https://loliland-bot.onrender.com/")  # Укажите ваш URL, например, https://your-app-name.onrender.com
+    WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "https://loliland-bot.onrender.com")
     if not WEBHOOK_URL:
         raise ValueError("WEBHOOK_URL environment variable not set")
     
-    await application.bot.set_webhook(url=f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
-    logger.info(f"Webhook установлен: {WEBHOOK_URL}/{TELEGRAM_TOKEN}")
+    webhook_url = f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}"
+    await application.bot.set_webhook(url=webhook_url)
+    logger.info(f"Webhook установлен: {webhook_url}")
     
     await application.initialize()
     await application.start()
@@ -168,7 +169,7 @@ async def main():
         listen="0.0.0.0",
         port=PORT,
         url_path=TELEGRAM_TOKEN,
-        webhook_url=f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}"
+        webhook_url=webhook_url
     )
     
     logger.info("Бот запущен")
